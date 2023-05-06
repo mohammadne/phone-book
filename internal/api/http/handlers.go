@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/MohammadNE/PhoneBook/internal/models"
@@ -73,7 +74,6 @@ func (handler *Server) login(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).SendString(errString)
 	}
 
-	// request token
 	token, err := handler.token.CreateTokenString(user.Id)
 	if err != nil {
 		errString := "Error creating JWT token for user"
@@ -83,4 +83,25 @@ func (handler *Server) login(c *fiber.Ctx) error {
 
 	response := map[string]string{"Token": token}
 	return c.Status(http.StatusOK).JSON(&response)
+}
+
+func (handler *Server) getContacts(c *fiber.Ctx) error {
+	fmt.Println(c.Locals("id"))
+	return c.SendStatus(http.StatusNotImplemented)
+}
+
+func (handler *Server) getContact(c *fiber.Ctx) error {
+	return c.SendStatus(http.StatusNotImplemented)
+}
+
+func (handler *Server) addContact(c *fiber.Ctx) error {
+	return c.SendStatus(http.StatusNotImplemented)
+}
+
+func (handler *Server) updateContact(c *fiber.Ctx) error {
+	return c.SendStatus(http.StatusNotImplemented)
+}
+
+func (handler *Server) deleteContact(c *fiber.Ctx) error {
+	return c.SendStatus(http.StatusNotImplemented)
 }

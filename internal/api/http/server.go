@@ -27,8 +27,7 @@ func New(cfg *Config, log *zap.Logger, repo repository.Repository, token token.T
 	v1 := server.app.Group("api/v1")
 	v1.Post("/register", server.register)
 	v1.Post("/login", server.login)
-	// v1.Post("/:id<int>", server.fetchUserId, server.user)
-	// v1.Get("/me", server.fetchUserId, server.me)
+	v1.Get("/contacts", server.fetchUserId, server.getContacts)
 	// v1.Post("/update", server.fetchUserId, server.update)
 
 	return server
