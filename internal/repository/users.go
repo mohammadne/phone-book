@@ -27,6 +27,17 @@ func (r *repository) CreateUser(user *models.User) error {
 	return nil
 }
 
+const QueryGetUserDetailsById = `
+SELECT users.id, users.password, users.created_at, contacts.name, contacts.phones, contacts.description
+FROM users
+JOIN contacts ON users.id = contacts.user_id
+WHERE 
+	users.id=$1 AND 
+	contacts.id > $2 AND 
+	contacts.name LIKE '%' || $3 || '%'
+ORDER BY contacts.id
+FETCH NEXT $4 ROWS ONLY;`
+
 const QueryGetUserByEmail = `
 SELECT id, password, created_at
 FROM users

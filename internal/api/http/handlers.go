@@ -83,22 +83,31 @@ func (handler *Server) login(c *fiber.Ctx) error {
 }
 
 func (handler *Server) getContacts(c *fiber.Ctx) error {
-	// ctx := c.Context()
-
 	userId, ok := c.Locals("user-id").(uint64)
 	if !ok || userId == 0 {
 		handler.logger.Error("Invalid user-id local")
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	contactId, err := strconv.ParseUint(c.Params("id"), 10, 64)
-	if err != nil || contactId == 0 {
-		handler.logger.Error("Invalid token header", zap.Error(err))
-		response := "Invalid contact id in path parameters"
-		return c.Status(http.StatusBadRequest).SendString(response)
+	limit, _ := strconv.Atoi(c.Query("limit"))
+	var cursor string = c.Query("cursor")
+	var search string = c.Query("search")
+
+	contacts, newCursor, err := handler.repository.GetContacts(userId, cursor, search, limit)
+	if err != nil {
+		errString := "Error happened while getting contacts"
+		handler.logger.Error(errString, zap.ByteString("query", c.Request().URI().FullURI()), zap.Error(err))
+		return c.SendStatus(http.StatusInternalServerError)
+	} else if len(contacts) == 0 {
+		errString := "Not found any contact"
+		handler.logger.Error(errString, zap.String("cursor", cursor))
+		return c.SendStatus(http.StatusNotFound)
 	}
 
-	return c.SendStatus(http.StatusNotImplemented)
+	return c.Status(http.StatusCreated).JSON(&map[string]any{
+		"cursor":   newCursor,
+		"contacts": contacts,
+	})
 }
 
 func (handler *Server) createContact(c *fiber.Ctx) error {

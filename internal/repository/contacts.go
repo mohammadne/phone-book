@@ -11,7 +11,7 @@ import (
 )
 
 const QueryGetContacts = `
-SELECT name, phones, description
+SELECT id, name, phones, description
 FROM contacts
 WHERE 
 	user_id=$1 AND 
@@ -51,10 +51,11 @@ func (r *repository) GetContacts(userId uint64, encryptedCursor, search string, 
 	out := make([][]any, limit)
 
 	for index := 0; index < limit; index++ {
-		out[index] = []any{&contacts[index].Id, &contacts[index].Name, &contacts[index].Phones, &contacts[index].Description}
+		out[index] = []any{&contacts[index].Id, &contacts[index].Name, pq.Array(&contacts[index].Phones), &contacts[index].Description}
 	}
 
-	if err := r.rdbms.Query(QueryGetContacts, []any{userId, id, search, limit}, out); err != nil {
+	in := []any{userId, id, search, limit}
+	if err := r.rdbms.Query(QueryGetContacts, in, out); err != nil {
 		r.logger.Error("Error query contacts", zap.Error(err))
 		return nil, "", err
 	}
@@ -63,7 +64,21 @@ func (r *repository) GetContacts(userId uint64, encryptedCursor, search string, 
 		return contacts, "", nil
 	}
 
-	lastContact := contacts[len(contacts)]
+	var lastContact models.Contact
+
+	for index := limit - 1; index >= 0; index-- {
+		if contacts[index].Id != 0 {
+			lastContact = contacts[index]
+			break
+		} else {
+			contacts = contacts[:index]
+		}
+	}
+
+	if lastContact.Id == 0 {
+		return contacts, "", nil
+	}
+
 	cursor := strconv.FormatUint(lastContact.Id, 10)
 
 	// encrypt cursor
