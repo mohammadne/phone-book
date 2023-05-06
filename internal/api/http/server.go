@@ -30,11 +30,11 @@ func New(cfg *Config, log *zap.Logger, repo repository.Repository, token token.T
 	auth.Post("/register", server.register)
 	auth.Post("/login", server.login)
 
-	contacts := v1.Group("contacts")
-	contacts.Get("/", server.fetchUserId, server.getContacts)
-	contacts.Get("/:id", server.fetchUserId, server.getContact)
-	contacts.Put("/:id", server.fetchUserId, server.updateContact)
-	contacts.Delete("/:id", server.fetchUserId, server.deleteContact)
+	contacts := v1.Group("contacts", server.fetchUserId)
+	contacts.Get("/", server.getContacts)
+	contacts.Get("/:id", server.getContact)
+	contacts.Put("/:id", server.updateContact)
+	contacts.Delete("/:id", server.deleteContact)
 
 	return server
 }

@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/MohammadNE/PhoneBook/internal/models"
 	"github.com/MohammadNE/PhoneBook/pkg/rdbms"
@@ -86,7 +87,7 @@ func (handler *Server) login(c *fiber.Ctx) error {
 }
 
 func (handler *Server) getContacts(c *fiber.Ctx) error {
-	fmt.Println(c.Locals("id"))
+	fmt.Println(c.Locals("user-id"))
 	return c.SendStatus(http.StatusNotImplemented)
 }
 
@@ -109,7 +110,32 @@ func (handler *Server) updateContact(c *fiber.Ctx) error {
 }
 
 func (handler *Server) deleteContact(c *fiber.Ctx) error {
-	fmt.Println("deleteContact")
-	fmt.Println(c.Params("id"))
-	return c.SendStatus(http.StatusNotImplemented)
+	ctx := c.Context()
+
+	userId, ok := c.Locals("user-id").(uint64)
+	if !ok || userId == 0 {
+		handler.logger.Error("Invalid user-id local")
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	contactId, err := strconv.ParseUint(c.Params("id"), 10, 64)
+	if err != nil || contactId == 0 {
+		handler.logger.Error("Invalid token header", zap.Error(err))
+		response := "Invalid contact id in path parameters"
+		return c.Status(http.StatusBadRequest).SendString(response)
+	}
+
+	if err := handler.repository.DeleteContact(ctx, contactId); err != nil {
+		if err.Error() == rdbms.ErrNotFound {
+			response := fmt.Sprintf("The given contact id (%d) doesn't exists", contactId)
+			return c.Status(http.StatusBadRequest).SendString(response)
+		}
+
+		errString := "Error happened while deleting the contact"
+		handler.logger.Error(errString, zap.Uint64("contact-id", contactId), zap.Error(err))
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	response := "Contact has been deleted successfully"
+	return c.Status(http.StatusOK).SendString(response)
 }

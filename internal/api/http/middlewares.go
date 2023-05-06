@@ -25,6 +25,6 @@ func (s *Server) fetchUserId(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).SendString(response)
 	}
 
-	c.Locals("id", id)
+	c.Locals("user-id", id)
 	return c.Next()
 }

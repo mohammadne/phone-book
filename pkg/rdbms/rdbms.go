@@ -30,12 +30,9 @@ type rdbms struct {
 }
 
 var (
-	ErrPrepareStatement = "error when tying to prepare statement"
-	ErrNotFound         = "there is no entry with provided arguments"
-	ErrDuplicate        = "there is no entry with provided arguments"
-	ErrorQueryRow       = "error when tying to read entry"
-	ErrorQueryRows      = "error when tying to read entry"
-	ErrExecute          = "error when tying to excute statement"
+	ErrPrepareStatement = "Error when tying to prepare statement"
+	ErrNotFound         = "Error no entry found with given arguments"
+	ErrDuplicate        = "Error operation canceled due to the duplication entry"
 )
 
 func (db *rdbms) QueryRow(query string, in []any, out []any) error {
@@ -51,7 +48,7 @@ func (db *rdbms) QueryRow(query string, in []any, out []any) error {
 		} else if err == sql.ErrNoRows {
 			return errors.New(ErrNotFound)
 		}
-		return fmt.Errorf("%s\n%v", ErrorQueryRow, err)
+		return fmt.Errorf("%s\n%v", "Error while executing the query or scanning the row", err)
 	}
 
 	return nil
@@ -66,23 +63,20 @@ func (db *rdbms) Query(query string, in []any, out [][]any) error {
 
 	rows, err := stmt.Query(in...)
 	if err != nil {
-		return fmt.Errorf("%s\n%v", ErrorQueryRows, err)
+		return fmt.Errorf("%s\n%v", "Error executing the query", err)
 	}
 	defer rows.Close()
 
 	var index = 0
 	for ; rows.Next(); index++ {
 		if err = rows.Scan(out[index]...); err != nil {
-			if err == sql.ErrNoRows {
-				return errors.New(ErrNotFound)
-			}
-			return fmt.Errorf("%s\n%v", ErrorQueryRow, err)
+			return fmt.Errorf("%s\n%v", "Error while scanning the row", err)
 		}
 	}
 	out = out[:index+1]
 
 	if err := rows.Err(); err != nil {
-		return fmt.Errorf("%s\n%v", ErrorQueryRows, err)
+		return fmt.Errorf("%s\n%v", "There's an error in result of the query", err)
 	}
 
 	return nil
@@ -95,11 +89,18 @@ func (db *rdbms) Execute(query string, in []any) error {
 	}
 	defer stmt.Close()
 
-	if _, err = stmt.Exec(in...); err != nil {
+	result, err := stmt.Exec(in...)
+	if err != nil {
 		if strings.Contains(err.Error(), "Duplicate entry") {
 			return errors.New(ErrDuplicate)
 		}
-		return fmt.Errorf("%s\n%v", ErrExecute, err)
+		return fmt.Errorf("%s\n%v", "error when tying to excute statement", err)
+	}
+
+	if rowsAffected, err := result.RowsAffected(); err != nil {
+		return fmt.Errorf("error getting number of rows affected\n%v", err)
+	} else if rowsAffected == 0 {
+		return errors.New(ErrNotFound)
 	}
 
 	return nil
