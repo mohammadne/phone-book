@@ -15,9 +15,9 @@ func Default() *Config {
 		RDBMS: &rdbms.Config{
 			Host:     "localhost",
 			Port:     5432,
-			Username: "TEST_USER",
-			Password: "TEST_PASSWORD",
-			Database: "BOOK_DB",
+			Username: "PHONEBOOK_USER",
+			Password: "PHONEBOOK_PASSWORD",
+			Database: "PHONEBOOK_DB",
 		},
 		// Grpc: &grpc.Config{
 		// 	ListenPort: 9090,

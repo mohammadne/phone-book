@@ -95,7 +95,7 @@ func (db *rdbms) Execute(query string, in []any) error {
 	}
 	defer stmt.Close()
 
-	if _, err = stmt.Exec(in); err != nil {
+	if _, err = stmt.Exec(in...); err != nil {
 		if strings.Contains(err.Error(), "Duplicate entry") {
 			return errors.New(ErrDuplicate)
 		}

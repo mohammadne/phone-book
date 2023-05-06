@@ -5,5 +5,3 @@ CREATE TABLE IF NOT EXISTS contacts(
 	description VARCHAR(255),
 	user_id INTEGER REFERENCES users (id)
 );
-
-CREATE INDEX user_id_idx ON contacts (user_id);
