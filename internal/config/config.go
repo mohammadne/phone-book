@@ -1,8 +1,10 @@
 package config
 
 import (
+	"github.com/MohammadNE/PhoneBook/internal/api/http"
 	"github.com/MohammadNE/PhoneBook/pkg/logger"
 	"github.com/MohammadNE/PhoneBook/pkg/rdbms"
+	"github.com/MohammadNE/PhoneBook/pkg/token"
 )
 
 // "github.com/CafeKetab/auth/pkg/crypto"
@@ -11,7 +13,8 @@ import (
 
 type Config struct {
 	Logger *logger.Config `koanf:"logger"`
+	HTTP   *http.Config   `koanf:"http"`
 	RDBMS  *rdbms.Config  `koanf:"rdbms"`
-	// Token  *token.Config  `koanf:"token"`
+	Token  *token.Config  `koanf:"token"`
 	// Crypto *crypto.Config `koanf:"crypto"`
 }

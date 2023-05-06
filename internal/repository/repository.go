@@ -53,7 +53,13 @@ func (r *repository) Migrate(direction models.Migrate) error {
 	result = utils.Sort(result)
 
 	for index := 0; index < len(result); index++ {
-		file := "migrations/" + result[index]
+		file := "migrations/"
+
+		if direction == models.Up {
+			file += result[index]
+		} else {
+			file += result[len(result)-index-1]
+		}
 
 		data, err := fs.ReadFile(migrations, file)
 		if err != nil {
