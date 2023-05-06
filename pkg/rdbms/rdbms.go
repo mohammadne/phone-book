@@ -100,6 +100,7 @@ func (db *rdbms) Execute(query string, in []any) error {
 	if rowsAffected, err := result.RowsAffected(); err != nil {
 		return fmt.Errorf("error getting number of rows affected\n%v", err)
 	} else if rowsAffected == 0 {
+		// for delete
 		return errors.New(ErrNotFound)
 	}
 

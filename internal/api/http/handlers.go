@@ -91,32 +91,6 @@ func (handler *Server) getContacts(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusNotImplemented)
 }
 
-func (handler *Server) getContact(c *fiber.Ctx) error {
-	ctx := c.Context()
-
-	userId, ok := c.Locals("user-id").(uint64)
-	if !ok || userId == 0 {
-		handler.logger.Error("Invalid user-id local")
-		return c.SendStatus(http.StatusInternalServerError)
-	}
-
-	contactId, err := strconv.ParseUint(c.Params("id"), 10, 64)
-	if err != nil || contactId == 0 {
-		handler.logger.Error("Invalid token header", zap.Error(err))
-		response := "Invalid contact id in path parameters"
-		return c.Status(http.StatusBadRequest).SendString(response)
-	}
-
-	contact, err := handler.repository.GetContactById(ctx, userId, contactId)
-	if err != nil {
-		errString := "Error happened while getting the contact"
-		handler.logger.Error(errString, zap.Any("contact", contact), zap.Error(err))
-		return c.SendStatus(http.StatusInternalServerError)
-	}
-
-	return c.Status(http.StatusOK).JSON(contact.Marshal())
-}
-
 func (handler *Server) createContact(c *fiber.Ctx) error {
 	ctx := c.Context()
 
@@ -150,6 +124,37 @@ func (handler *Server) createContact(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).SendString(response)
 }
 
+func (handler *Server) getContact(c *fiber.Ctx) error {
+	ctx := c.Context()
+
+	userId, ok := c.Locals("user-id").(uint64)
+	if !ok || userId == 0 {
+		handler.logger.Error("Invalid user-id local")
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	contactId, err := strconv.ParseUint(c.Params("id"), 10, 64)
+	if err != nil || contactId == 0 {
+		handler.logger.Error("Invalid token header", zap.Error(err))
+		response := "Invalid contact id in path parameters"
+		return c.Status(http.StatusBadRequest).SendString(response)
+	}
+
+	contact, err := handler.repository.GetContactById(ctx, userId, contactId)
+	if err != nil {
+		if err.Error() == rdbms.ErrNotFound {
+			response := fmt.Sprintf("The given contact id (%d) doesn't exists", contactId)
+			return c.Status(http.StatusBadRequest).SendString(response)
+		}
+
+		errString := "Error happened while getting the contact"
+		handler.logger.Error(errString, zap.Any("contact", contact), zap.Error(err))
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	return c.Status(http.StatusOK).JSON(contact)
+}
+
 func (handler *Server) updateContact(c *fiber.Ctx) error {
 	ctx := c.Context()
 
@@ -166,23 +171,34 @@ func (handler *Server) updateContact(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).SendString(response)
 	}
 
+	oldContact, err := handler.repository.GetContactById(ctx, userId, contactId)
+	if err != nil {
+		if err.Error() == rdbms.ErrNotFound {
+			response := fmt.Sprintf("The given contact id (%d) doesn't exists", contactId)
+			return c.Status(http.StatusBadRequest).SendString(response)
+		}
+
+		errString := "Error happened while getting the contact"
+		handler.logger.Error(errString, zap.Uint64("user-id", userId), zap.Uint64("contact-id", contactId), zap.Error(err))
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
 	newContact := &models.Contact{}
 	if err := c.BodyParser(newContact); err != nil {
 		errString := "Error parsing request body"
 		handler.logger.Error(errString, zap.Any("contact", newContact), zap.Error(err))
 		return c.Status(http.StatusBadRequest).SendString(errString)
 	}
-	newContact.Id = contactId
+	newContact.Update(oldContact)
 
-	// TODO: check partial update
 	if err := handler.repository.UpdateContact(ctx, userId, newContact); err != nil {
 		errString := "Error happened while creating the contact"
 		handler.logger.Error(errString, zap.Any("contact", newContact), zap.Error(err))
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	response := "Contact has been created successfully"
-	return c.Status(http.StatusCreated).SendString(response)
+	response := "Contact has been updated successfully"
+	return c.Status(http.StatusOK).SendString(response)
 }
 
 func (handler *Server) deleteContact(c *fiber.Ctx) error {
