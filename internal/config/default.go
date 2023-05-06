@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/MohammadNE/PhoneBook/pkg/logger"
+	"github.com/MohammadNE/PhoneBook/pkg/rdbms"
 )
 
 func Default() *Config {
@@ -10,6 +11,13 @@ func Default() *Config {
 			Development: true,
 			Level:       "debug",
 			Encoding:    "console",
+		},
+		RDBMS: &rdbms.Config{
+			Host:     "localhost",
+			Port:     5432,
+			Username: "TEST_USER",
+			Password: "TEST_PASSWORD",
+			Database: "BOOK_DB",
 		},
 		// Grpc: &grpc.Config{
 		// 	ListenPort: 9090,
