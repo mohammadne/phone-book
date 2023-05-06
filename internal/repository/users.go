@@ -28,17 +28,17 @@ func (r *repository) CreateUser(ctx context.Context, user *models.User) error {
 	return nil
 }
 
-const QueryFindUserByEmail = `
+const QueryGetUserByEmail = `
 SELECT id, password, created_at
 FROM users
 WHERE email=$1;`
 
-func (r *repository) FindUserByEmail(ctx context.Context, email string) (*models.User, error) {
+func (r *repository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	user := &models.User{Email: email}
 
 	args := []interface{}{email}
 	dest := []interface{}{&user.Id, &user.Password, &user.CreatedAt}
-	if err := r.rdbms.QueryRow(QueryFindUserByEmail, args, dest); err != nil {
+	if err := r.rdbms.QueryRow(QueryGetUserByEmail, args, dest); err != nil {
 		if err.Error() == rdbms.ErrNotFound {
 			return nil, err
 		}
@@ -50,17 +50,17 @@ func (r *repository) FindUserByEmail(ctx context.Context, email string) (*models
 	return user, nil
 }
 
-const QueryFindUserByEmailAndPassword = `
+const QueryGetUserByEmailAndPassword = `
 SELECT id, created_at 
 FROM users 
 WHERE email=$1 AND password=$2;`
 
-func (r *repository) FindUserByEmailAndPassword(ctx context.Context, email, password string) (*models.User, error) {
+func (r *repository) GetUserByEmailAndPassword(ctx context.Context, email, password string) (*models.User, error) {
 	user := &models.User{Email: email, Password: password}
 
 	args := []interface{}{email, password}
 	dest := []interface{}{&user.Id, &user.CreatedAt}
-	if err := r.rdbms.QueryRow(QueryFindUserByEmailAndPassword, args, dest); err != nil {
+	if err := r.rdbms.QueryRow(QueryGetUserByEmailAndPassword, args, dest); err != nil {
 		r.logger.Error("Error find user by email and password", zap.Error(err))
 		return nil, err
 	}

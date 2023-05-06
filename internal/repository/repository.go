@@ -17,9 +17,12 @@ type Repository interface {
 	Migrate(models.Migrate) error
 
 	CreateUser(ctx context.Context, user *models.User) error
-	FindUserByEmail(ctx context.Context, email string) (*models.User, error)
-	FindUserByEmailAndPassword(ctx context.Context, email, password string) (*models.User, error)
+	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
+	GetUserByEmailAndPassword(ctx context.Context, email, password string) (*models.User, error)
 
+	CreateContact(ctx context.Context, userId uint64, contect *models.Contact) error
+	GetContactById(ctx context.Context, userId, contactId uint64) (*models.Contact, error)
+	UpdateContact(ctx context.Context, userId uint64, contact *models.Contact) error
 	DeleteContact(ctx context.Context, userId, contactId uint64) error
 }
 

@@ -6,3 +6,14 @@ type Contact struct {
 	Phones      []string `json:"phones"`
 	Description string   `json:"description,omitempty"`
 }
+
+func (c *Contact) IsValid() bool {
+	if len(c.Name) == 0 || len(c.Phones) == 0 {
+		return false
+	}
+	return true
+}
+
+func (c Contact) Marshal() *Contact {
+	return &c
+}
