@@ -11,8 +11,8 @@ import (
 )
 
 type Token interface {
-	CreateTokenString(data interface{}) (string, error)
-	ExtractTokenData(tokenString string, data interface{}) error
+	CreateTokenString(data any) (string, error)
+	ExtractTokenData(tokenString string, data any) error
 }
 
 type token struct {
