@@ -20,7 +20,7 @@ type Repository interface {
 	FindUserByEmail(ctx context.Context, email string) (*models.User, error)
 	FindUserByEmailAndPassword(ctx context.Context, email, password string) (*models.User, error)
 
-	DeleteContact(ctx context.Context, id uint64) error
+	DeleteContact(ctx context.Context, userId, contactId uint64) error
 }
 
 type repository struct {

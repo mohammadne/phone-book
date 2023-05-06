@@ -125,7 +125,7 @@ func (handler *Server) deleteContact(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).SendString(response)
 	}
 
-	if err := handler.repository.DeleteContact(ctx, contactId); err != nil {
+	if err := handler.repository.DeleteContact(ctx, userId, contactId); err != nil {
 		if err.Error() == rdbms.ErrNotFound {
 			response := fmt.Sprintf("The given contact id (%d) doesn't exists", contactId)
 			return c.Status(http.StatusBadRequest).SendString(response)
