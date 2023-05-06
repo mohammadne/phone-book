@@ -91,17 +91,25 @@ func (handler *Server) getContacts(c *fiber.Ctx) error {
 }
 
 func (handler *Server) getContact(c *fiber.Ctx) error {
+	fmt.Println("getContact")
+	fmt.Println(c.Params("id"))
 	return c.SendStatus(http.StatusNotImplemented)
 }
 
 func (handler *Server) addContact(c *fiber.Ctx) error {
+	fmt.Println("addContact")
+	fmt.Println(c.Params("id"))
 	return c.SendStatus(http.StatusNotImplemented)
 }
 
 func (handler *Server) updateContact(c *fiber.Ctx) error {
+	fmt.Println("updateContact")
+	fmt.Println(c.Params("id"))
 	return c.SendStatus(http.StatusNotImplemented)
 }
 
 func (handler *Server) deleteContact(c *fiber.Ctx) error {
+	fmt.Println("deleteContact")
+	fmt.Println(c.Params("id"))
 	return c.SendStatus(http.StatusNotImplemented)
 }

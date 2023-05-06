@@ -25,10 +25,16 @@ func New(cfg *Config, log *zap.Logger, repo repository.Repository, token token.T
 	server.app = fiber.New(fiber.Config{JSONEncoder: json.Marshal, JSONDecoder: json.Unmarshal})
 
 	v1 := server.app.Group("api/v1")
-	v1.Post("/register", server.register)
-	v1.Post("/login", server.login)
-	v1.Get("/contacts", server.fetchUserId, server.getContacts)
-	// v1.Post("/update", server.fetchUserId, server.update)
+
+	auth := v1.Group("auth")
+	auth.Post("/register", server.register)
+	auth.Post("/login", server.login)
+
+	contacts := v1.Group("contacts")
+	contacts.Get("/", server.fetchUserId, server.getContacts)
+	contacts.Get("/:id", server.fetchUserId, server.getContact)
+	contacts.Put("/:id", server.fetchUserId, server.updateContact)
+	contacts.Delete("/:id", server.fetchUserId, server.deleteContact)
 
 	return server
 }
