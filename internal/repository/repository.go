@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"context"
 	"embed"
 	"fmt"
 	"io/fs"
@@ -16,23 +15,25 @@ import (
 type Repository interface {
 	Migrate(models.Migrate) error
 
-	CreateUser(ctx context.Context, user *models.User) error
-	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
-	GetUserByEmailAndPassword(ctx context.Context, email, password string) (*models.User, error)
+	CreateUser(user *models.User) error
+	GetUserByEmail(email string) (*models.User, error)
+	GetUserByEmailAndPassword(email, password string) (*models.User, error)
 
-	CreateContact(ctx context.Context, userId uint64, contect *models.Contact) error
-	GetContactById(ctx context.Context, userId, contactId uint64) (*models.Contact, error)
-	UpdateContact(ctx context.Context, userId uint64, contact *models.Contact) error
-	DeleteContact(ctx context.Context, userId, contactId uint64) error
+	GetContacts(userId uint64, encryptedCursor, search string, limit int) ([]models.Contact, string, error)
+	CreateContact(userId uint64, contect *models.Contact) error
+	GetContactById(userId, contactId uint64) (*models.Contact, error)
+	UpdateContact(userId uint64, contact *models.Contact) error
+	DeleteContact(userId, contactId uint64) error
 }
 
 type repository struct {
 	logger *zap.Logger
+	config *Config
 	rdbms  rdbms.RDBMS
 }
 
-func New(logger *zap.Logger, rdbms rdbms.RDBMS) Repository {
-	r := &repository{logger: logger, rdbms: rdbms}
+func New(logger *zap.Logger, cfg *Config, rdbms rdbms.RDBMS) Repository {
+	r := &repository{logger: logger, config: cfg, rdbms: rdbms}
 
 	return r
 }

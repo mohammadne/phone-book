@@ -35,7 +35,7 @@ func (cmd *Server) main(cfg *config.Config, trap chan os.Signal) {
 		logger.Panic("Error creating rdbms database", zap.Error(err))
 	}
 
-	repo := repository.New(logger, rdbms)
+	repo := repository.New(logger, cfg.Repository, rdbms)
 
 	token, err := token.New(cfg.Token)
 	if err != nil {

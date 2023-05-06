@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"context"
 	"errors"
 
 	"github.com/MohammadNE/PhoneBook/internal/models"
@@ -13,7 +12,7 @@ const QueryCreateUser = `
 INSERT INTO users(email, password) VALUES($1, $2) 
 RETURNING id;`
 
-func (r *repository) CreateUser(ctx context.Context, user *models.User) error {
+func (r *repository) CreateUser(user *models.User) error {
 	if len(user.Email) == 0 || len(user.Password) == 0 {
 		return errors.New("Insufficient information for user")
 	}
@@ -33,7 +32,7 @@ SELECT id, password, created_at
 FROM users
 WHERE email=$1;`
 
-func (r *repository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+func (r *repository) GetUserByEmail(email string) (*models.User, error) {
 	user := &models.User{Email: email}
 
 	args := []interface{}{email}
@@ -55,7 +54,7 @@ SELECT id, created_at
 FROM users 
 WHERE email=$1 AND password=$2;`
 
-func (r *repository) GetUserByEmailAndPassword(ctx context.Context, email, password string) (*models.User, error) {
+func (r *repository) GetUserByEmailAndPassword(email, password string) (*models.User, error) {
 	user := &models.User{Email: email, Password: password}
 
 	args := []interface{}{email, password}

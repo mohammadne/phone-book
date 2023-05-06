@@ -40,7 +40,7 @@ func (m *Migrate) main(cfg *config.Config, args []string, trap chan os.Signal) {
 		logger.Fatal("Error creating rdbms", zap.Error(err))
 	}
 
-	repository := repository.New(logger, rdbms)
+	repository := repository.New(logger, cfg.Repository, rdbms)
 	if args[0] == "up" {
 		if err := repository.Migrate(models.Up); err != nil {
 			logger.Fatal("Error migrating up", zap.Error(err))
