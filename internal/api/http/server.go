@@ -11,7 +11,6 @@ import (
 )
 
 type Server struct {
-	config     *Config
 	logger     *zap.Logger
 	repository repository.Repository
 	token      token.Token
@@ -19,8 +18,8 @@ type Server struct {
 	app *fiber.App
 }
 
-func New(cfg *Config, log *zap.Logger, repo repository.Repository, token token.Token) *Server {
-	server := &Server{config: cfg, logger: log, repository: repo, token: token}
+func New(log *zap.Logger, repo repository.Repository, token token.Token) *Server {
+	server := &Server{logger: log, repository: repo, token: token}
 
 	server.app = fiber.New(fiber.Config{JSONEncoder: json.Marshal, JSONDecoder: json.Unmarshal})
 
@@ -40,8 +39,8 @@ func New(cfg *Config, log *zap.Logger, repo repository.Repository, token token.T
 	return server
 }
 
-func (server *Server) Serve() error {
-	addr := fmt.Sprintf(":%d", server.config.ListenPort)
+func (server *Server) Serve(port int) error {
+	addr := fmt.Sprintf(":%d", port)
 	if err := server.app.Listen(addr); err != nil {
 		server.logger.Error("error resolving server", zap.Error(err))
 		return err

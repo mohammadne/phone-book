@@ -15,7 +15,7 @@ const (
 	delimeter = "."
 	seperator = "__"
 
-	envPrefix = "AUTH_"
+	envPrefix = "PHONEBOOK_"
 
 	tagName = "koanf"
 

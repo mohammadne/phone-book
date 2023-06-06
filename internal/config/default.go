@@ -3,7 +3,6 @@ package config
 import (
 	"time"
 
-	"github.com/MohammadNE/PhoneBook/internal/api/http"
 	"github.com/MohammadNE/PhoneBook/internal/repository"
 	"github.com/MohammadNE/PhoneBook/pkg/logger"
 	"github.com/MohammadNE/PhoneBook/pkg/rdbms"
@@ -16,9 +15,6 @@ func Default() *Config {
 			Development: true,
 			Level:       "debug",
 			Encoding:    "console",
-		},
-		HTTP: &http.Config{
-			ListenPort: 8080,
 		},
 		RDBMS: &rdbms.Config{
 			Host:     "localhost",

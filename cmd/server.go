@@ -42,8 +42,8 @@ func (cmd *Server) main(cfg *config.Config, trap chan os.Signal) {
 		logger.Panic("Error creating token object", zap.Error(err))
 	}
 
-	server := http.New(cfg.HTTP, logger, repo, token)
-	go server.Serve()
+	server := http.New(logger, repo, token)
+	go server.Serve(8080)
 
 	// Keep this at the bottom of the main function
 	field := zap.String("signal trap", (<-trap).String())

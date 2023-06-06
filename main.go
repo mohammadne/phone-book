@@ -8,7 +8,6 @@ import (
 
 	"github.com/MohammadNE/PhoneBook/cmd"
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
 )
 
 func main() {
@@ -24,6 +23,6 @@ func main() {
 	)
 
 	if err := root.Execute(); err != nil {
-		log.Fatal("failed to execute root command", zap.Error(err))
+		log.Fatalf("failed to execute root command: \n%v", err)
 	}
 }
