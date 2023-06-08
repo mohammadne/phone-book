@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/MohammadNE/PhoneBook/internal/repository"
-	"github.com/MohammadNE/PhoneBook/pkg/token"
 	"github.com/gofiber/fiber/v2"
+	"github.com/mohammadne/phone-book/internal/repository"
+	"github.com/mohammadne/phone-book/pkg/token"
 	"go.uber.org/zap"
 )
 

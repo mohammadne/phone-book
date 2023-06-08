@@ -3,12 +3,12 @@ package cmd
 import (
 	"os"
 
-	"github.com/MohammadNE/PhoneBook/internal/api/http"
-	"github.com/MohammadNE/PhoneBook/internal/config"
-	"github.com/MohammadNE/PhoneBook/internal/repository"
-	"github.com/MohammadNE/PhoneBook/pkg/logger"
-	"github.com/MohammadNE/PhoneBook/pkg/rdbms"
-	"github.com/MohammadNE/PhoneBook/pkg/token"
+	"github.com/mohammadne/phone-book/internal/api/http"
+	"github.com/mohammadne/phone-book/internal/config"
+	"github.com/mohammadne/phone-book/internal/repository"
+	"github.com/mohammadne/phone-book/pkg/logger"
+	"github.com/mohammadne/phone-book/pkg/rdbms"
+	"github.com/mohammadne/phone-book/pkg/token"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )

@@ -3,8 +3,8 @@ package repository
 import (
 	"errors"
 
-	"github.com/MohammadNE/PhoneBook/internal/models"
-	"github.com/MohammadNE/PhoneBook/pkg/rdbms"
+	"github.com/mohammadne/phone-book/internal/models"
+	"github.com/mohammadne/phone-book/pkg/rdbms"
 	"go.uber.org/zap"
 )
 

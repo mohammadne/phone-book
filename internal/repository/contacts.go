@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/MohammadNE/PhoneBook/internal/models"
-	"github.com/MohammadNE/PhoneBook/pkg/crypto"
 	"github.com/lib/pq"
+	"github.com/mohammadne/phone-book/internal/models"
+	"github.com/mohammadne/phone-book/pkg/crypto"
 	"go.uber.org/zap"
 )
 

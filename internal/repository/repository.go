@@ -6,9 +6,9 @@ import (
 	"io/fs"
 	"strings"
 
-	"github.com/MohammadNE/PhoneBook/internal/models"
-	"github.com/MohammadNE/PhoneBook/pkg/rdbms"
-	"github.com/MohammadNE/PhoneBook/pkg/utils"
+	"github.com/mohammadne/phone-book/internal/models"
+	"github.com/mohammadne/phone-book/pkg/rdbms"
+	"github.com/mohammadne/phone-book/pkg/utils"
 	"go.uber.org/zap"
 )
 

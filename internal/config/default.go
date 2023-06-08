@@ -3,10 +3,10 @@ package config
 import (
 	"time"
 
-	"github.com/MohammadNE/PhoneBook/internal/repository"
-	"github.com/MohammadNE/PhoneBook/pkg/logger"
-	"github.com/MohammadNE/PhoneBook/pkg/rdbms"
-	"github.com/MohammadNE/PhoneBook/pkg/token"
+	"github.com/mohammadne/phone-book/internal/repository"
+	"github.com/mohammadne/phone-book/pkg/logger"
+	"github.com/mohammadne/phone-book/pkg/rdbms"
+	"github.com/mohammadne/phone-book/pkg/token"
 )
 
 func Default() *Config {

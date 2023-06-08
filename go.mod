@@ -1,4 +1,4 @@
-module github.com/MohammadNE/PhoneBook
+module github.com/mohammadne/phone-book
 
 go 1.20
 

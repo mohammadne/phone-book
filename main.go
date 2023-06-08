@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/MohammadNE/PhoneBook/cmd"
+	"github.com/mohammadne/phone-book/cmd"
 	"github.com/spf13/cobra"
 )
 

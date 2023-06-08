@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/MohammadNE/PhoneBook/internal/models"
-	"github.com/MohammadNE/PhoneBook/pkg/rdbms"
 	"github.com/gofiber/fiber/v2"
+	"github.com/mohammadne/phone-book/internal/models"
+	"github.com/mohammadne/phone-book/pkg/rdbms"
 	"go.uber.org/zap"
 )
 
