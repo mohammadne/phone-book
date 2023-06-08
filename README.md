@@ -1,6 +1,6 @@
 # PhoneBook
 
-## Deploy Postgresql locally∏
+## Deploy Postgresql locally
 
 ```bash
 cd deployments
