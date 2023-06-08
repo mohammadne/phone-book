@@ -8,14 +8,11 @@ import (
 )
 
 type RDBMS interface {
-	// will be used for read and create
+	Execute(query string, in []any) error
+
 	QueryRow(query string, in []any, out []any) error
 
-	// for cursor based queries
 	Query(query string, in []any, out [][]any) error
-
-	// will be used for update and delete
-	Execute(query string, in []any) error
 }
 
 type rdbms struct {
@@ -27,6 +24,31 @@ var (
 	ErrNotFound         = "Error no entry found with given arguments"
 	ErrDuplicate        = "Error operation canceled due to the duplication entry"
 )
+
+func (db *rdbms) Execute(query string, in []any) error {
+	stmt, err := db.db.Prepare(query)
+	if err != nil {
+		return fmt.Errorf("%s\n%v", ErrPrepareStatement, err)
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(in...)
+	if err != nil {
+		if strings.Contains(err.Error(), "Duplicate entry") {
+			return errors.New(ErrDuplicate)
+		}
+		return fmt.Errorf("%s\n%v", "error when tying to excute statement", err)
+	}
+
+	if rowsAffected, err := result.RowsAffected(); err != nil {
+		return fmt.Errorf("error getting number of rows affected\n%v", err)
+	} else if rowsAffected == 0 {
+		// for delete
+		return errors.New(ErrNotFound)
+	}
+
+	return nil
+}
 
 func (db *rdbms) QueryRow(query string, in []any, out []any) error {
 	stmt, err := db.db.Prepare(query)
@@ -70,31 +92,6 @@ func (db *rdbms) Query(query string, in []any, out [][]any) error {
 
 	if err := rows.Err(); err != nil {
 		return fmt.Errorf("%s\n%v", "There's an error in result of the query", err)
-	}
-
-	return nil
-}
-
-func (db *rdbms) Execute(query string, in []any) error {
-	stmt, err := db.db.Prepare(query)
-	if err != nil {
-		return fmt.Errorf("%s\n%v", ErrPrepareStatement, err)
-	}
-	defer stmt.Close()
-
-	result, err := stmt.Exec(in...)
-	if err != nil {
-		if strings.Contains(err.Error(), "Duplicate entry") {
-			return errors.New(ErrDuplicate)
-		}
-		return fmt.Errorf("%s\n%v", "error when tying to excute statement", err)
-	}
-
-	if rowsAffected, err := result.RowsAffected(); err != nil {
-		return fmt.Errorf("error getting number of rows affected\n%v", err)
-	} else if rowsAffected == 0 {
-		// for delete
-		return errors.New(ErrNotFound)
 	}
 
 	return nil

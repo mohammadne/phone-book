@@ -46,9 +46,9 @@ WHERE email=$1;`
 func (r *repository) GetUserByEmail(email string) (*models.User, error) {
 	user := &models.User{Email: email}
 
-	args := []interface{}{email}
-	dest := []interface{}{&user.Id, &user.Password, &user.CreatedAt}
-	if err := r.rdbms.QueryRow(QueryGetUserByEmail, args, dest); err != nil {
+	in := []interface{}{email}
+	out := []interface{}{&user.Id, &user.Password, &user.CreatedAt}
+	if err := r.rdbms.QueryRow(QueryGetUserByEmail, in, out); err != nil {
 		if err.Error() == rdbms.ErrNotFound {
 			return nil, err
 		}
@@ -68,9 +68,9 @@ WHERE email=$1 AND password=$2;`
 func (r *repository) GetUserByEmailAndPassword(email, password string) (*models.User, error) {
 	user := &models.User{Email: email, Password: password}
 
-	args := []interface{}{email, password}
-	dest := []interface{}{&user.Id, &user.CreatedAt}
-	if err := r.rdbms.QueryRow(QueryGetUserByEmailAndPassword, args, dest); err != nil {
+	in := []interface{}{email, password}
+	out := []interface{}{&user.Id, &user.CreatedAt}
+	if err := r.rdbms.QueryRow(QueryGetUserByEmailAndPassword, in, out); err != nil {
 		r.logger.Error("Error find user by email and password", zap.Error(err))
 		return nil, err
 	}

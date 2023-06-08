@@ -32,7 +32,7 @@ func (m *Migrate) main(cfg *config.Config, args []string, trap chan os.Signal) {
 	logger := logger.NewZap(cfg.Logger)
 
 	if len(args) != 1 {
-		logger.Fatal("invalid arguments given", zap.Any("args", args))
+		logger.Fatal("Invalid arguments given", zap.Any("args", args))
 	}
 
 	rdbms, err := rdbms.New(cfg.RDBMS)
@@ -41,14 +41,8 @@ func (m *Migrate) main(cfg *config.Config, args []string, trap chan os.Signal) {
 	}
 
 	repository := repository.New(logger, cfg.Repository, rdbms)
-	if args[0] == "up" {
-		if err := repository.Migrate(models.Up); err != nil {
-			logger.Fatal("Error migrating up", zap.Error(err))
-		}
-	} else {
-		if err := repository.Migrate(models.Down); err != nil {
-			logger.Fatal("Error migrating down", zap.Error(err))
-		}
+	if err := repository.Migrate(models.Migrate(args[0])); err != nil {
+		logger.Fatal("Error migrating", zap.String("migration", args[0]), zap.Error(err))
 	}
 
 	logger.Info("Database has been migrated successfully", zap.String("migration", args[0]))
