@@ -7,13 +7,6 @@ import (
 	"strings"
 )
 
-type MigrateDirection uint8
-
-const (
-	MigrateUp   MigrateDirection = 1
-	MigrateDown MigrateDirection = 2
-)
-
 type RDBMS interface {
 	// will be used for read and create
 	QueryRow(query string, in []any, out []any) error
