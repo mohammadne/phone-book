@@ -51,12 +51,10 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create the name of the service account to use
+Create imagePullSecret for pulling images from private registry
 */}}
-{{- define "phone-book.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "phone-book.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
+{{- define "imagePullSecret" }}
+{{- with .Values.imageCredentials }}
+{{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"auth\":\"%s\"}}}" .registry .username .password (printf "%s:%s" .username .password | b64enc) | b64enc }}
 {{- end }}
 {{- end }}

@@ -2,7 +2,7 @@ global:
   storageClass: "remote-disk"
 
 auth:
-  database: gholam_db
+  database: phone_book
 
 primary:
   persistence:

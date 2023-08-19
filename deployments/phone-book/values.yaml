@@ -1,0 +1,56 @@
+replicaCount: 1
+
+image:
+  registry: ghcr.io
+  repository: mohammadne/phone-book
+  tag: "v0.1.13"
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  managment:
+    type: ClusterIP
+    protocol: TCP
+    port: 8080
+  client:
+    type: LoadBalancer
+    protocol: TCP
+    port: 8081
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 512Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+config:
+  logger:
+    development: false
+
+  rdbms:
+    host: postgresql
+    database: phone-book

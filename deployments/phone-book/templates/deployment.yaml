@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "phone-book.fullname" . }}
+  labels:
+    {{- include "phone-book.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "phone-book.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "phone-book.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: {{ .Chart.Name }}-migrate
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: RUNNING_INSIDE_POD
+              value: "true"
+          args:
+            - migrate
+            - up
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/phone-book
+      containers:
+        - name: {{ .Chart.Name }}-server
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: RUNNING_INSIDE_POD
+              value: "true"
+          args:
+            - server
+          ports:
+            - name: managment-port
+              containerPort: {{ .Values.service.managment.port }}
+              protocol: {{ .Values.service.managment.protocol }}
+            - name: client-port
+              containerPort: {{ .Values.service.client.port }}
+              protocol: {{ .Values.service.client.protocol }}
+          livenessProbe:
+            httpGet:
+              path: /healthz/liveness
+              port: managment-port
+          readinessProbe:
+            httpGet:
+              path: /healthz/readiness
+              port: managment-port
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/phone-book
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "phone-book.fullname" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

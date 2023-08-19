@@ -6,7 +6,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/gofiber/fiber/v2 v2.44.0
 	github.com/golang-jwt/jwt/v5 v5.0.0
-	github.com/knadh/koanf/providers/env v0.1.0
+	github.com/knadh/koanf/parsers/yaml v0.1.0
+	github.com/knadh/koanf/providers/rawbytes v0.1.0
 	github.com/knadh/koanf/providers/structs v0.1.0
 	github.com/knadh/koanf/v2 v2.0.1
 	github.com/lib/pq v1.10.9
@@ -42,4 +43,6 @@ require (
 	go.uber.org/goleak v1.1.12 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -3,21 +3,18 @@ package config
 import (
 	"fmt"
 	"log"
-	"strings"
+	"os"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/knadh/koanf/providers/env"
+	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/providers/rawbytes"
 	"github.com/knadh/koanf/providers/structs"
 	"github.com/knadh/koanf/v2"
 )
 
 const (
 	delimeter = "."
-	seperator = "__"
-
-	envPrefix = "PHONEBOOK_"
-
-	tagName = "koanf"
+	tagName   = "koanf"
 
 	upTemplate     = "================ Loaded Configuration ================"
 	bottomTemplate = "======================================================"
@@ -26,13 +23,14 @@ const (
 func Load(print bool) *Config {
 	k := koanf.New(delimeter)
 
-	// load default configuration from file
+	// load default configuration from struct
 	if err := k.Load(structs.Provider(Default(), "koanf"), nil); err != nil {
 		log.Fatalf("error loading default: %s", err)
 	}
 
-	if err := loadEnv(k); err != nil {
-		log.Printf("error loading environment variables: %v", err)
+	// load config from configmap
+	if err := loadConfigmap(k); err != nil {
+		log.Fatalf("Error loading from configmap: \n%v", err)
 	}
 
 	config := Config{}
@@ -49,15 +47,18 @@ func Load(print bool) *Config {
 	return &config
 }
 
-func loadEnv(k *koanf.Koanf) error {
-	callback := func(source string) string {
-		base := strings.ToLower(strings.TrimPrefix(source, envPrefix))
-		return strings.ReplaceAll(base, seperator, delimeter)
+func loadConfigmap(k *koanf.Koanf) error {
+	if os.Getenv("RUNNING_INSIDE_POD") == "" {
+		return nil
 	}
 
-	// load environment variables
-	if err := k.Load(env.Provider(envPrefix, delimeter, callback), nil); err != nil {
-		return fmt.Errorf("error loading environment variables: %s", err)
+	cm, err := os.ReadFile("/etc/phone-book/config.yaml")
+	if err != nil {
+		return fmt.Errorf("Error reading currnet namespace: %v", err)
+	}
+
+	if err := k.Load(rawbytes.Provider(cm), yaml.Parser()); err != nil {
+		return fmt.Errorf("Error loading values: %s", err)
 	}
 
 	return nil

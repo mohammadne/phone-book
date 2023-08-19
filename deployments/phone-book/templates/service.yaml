@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "phone-book.fullname" . }}-managment
+  labels:
+    {{- include "phone-book.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.managment.type }}
+  ports:
+    - port: {{ .Values.service.managment.port }}
+      targetPort: managment-port
+      protocol: {{ .Values.service.managment.protocol }}
+      name: managment-port
+  selector:
+    {{- include "phone-book.selectorLabels" . | nindent 4 }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "phone-book.fullname" . }}-client
+  labels:
+    {{- include "phone-book.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.client.type }}
+  ports:
+    - port: {{ .Values.service.client.port }}
+      targetPort: client-port
+      protocol: {{ .Values.service.client.protocol }}
+      name: client-port
+  selector:
+    {{- include "phone-book.selectorLabels" . | nindent 4 }}

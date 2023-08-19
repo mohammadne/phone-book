@@ -11,6 +11,14 @@ import (
 	"go.uber.org/zap"
 )
 
+func (handler *Server) liveness(c *fiber.Ctx) error {
+	return c.SendStatus(http.StatusOK)
+}
+
+func (handler *Server) readiness(c *fiber.Ctx) error {
+	return c.SendStatus(http.StatusOK)
+}
+
 func (handler *Server) register(c *fiber.Ctx) error {
 	request := struct{ Email, Password string }{}
 	if err := c.BodyParser(&request); err != nil {

@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/mohammadne/phone-book/internal/repository"
@@ -15,15 +14,23 @@ type Server struct {
 	repository repository.Repository
 	token      token.Token
 
-	app *fiber.App
+	managmentApp *fiber.App
+	clientApp    *fiber.App
 }
 
 func New(log *zap.Logger, repo repository.Repository, token token.Token) *Server {
 	server := &Server{logger: log, repository: repo, token: token}
 
-	server.app = fiber.New(fiber.Config{JSONEncoder: json.Marshal, JSONDecoder: json.Unmarshal})
+	// Managment Endpoints
 
-	v1 := server.app.Group("api/v1")
+	server.managmentApp = fiber.New(fiber.Config{JSONEncoder: json.Marshal, JSONDecoder: json.Unmarshal})
+
+	server.managmentApp.Get("/healthz/liveness", server.liveness)
+	server.managmentApp.Get("/healthz/readiness", server.readiness)
+
+	// Client Endpoints
+
+	v1 := server.clientApp.Group("api/v1")
 
 	auth := v1.Group("auth")
 	auth.Post("/register", server.register)
@@ -39,11 +46,14 @@ func New(log *zap.Logger, repo repository.Repository, token token.Token) *Server
 	return server
 }
 
-func (server *Server) Serve(port int) error {
-	addr := fmt.Sprintf(":%d", port)
-	if err := server.app.Listen(addr); err != nil {
-		server.logger.Error("error resolving server", zap.Error(err))
-		return err
-	}
-	return nil
+func (server *Server) Serve() {
+	go func() {
+		err := server.managmentApp.Listen(":8080")
+		server.logger.Fatal("error resolving managment server", zap.Error(err))
+	}()
+
+	go func() {
+		err := server.clientApp.Listen(":8081")
+		server.logger.Fatal("error resolving client server", zap.Error(err))
+	}()
 }
