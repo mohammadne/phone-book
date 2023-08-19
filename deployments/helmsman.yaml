@@ -26,7 +26,7 @@ apps:
     name: phone-book
     namespace: phone-book
     chart: "./phone-book"
-    enabled: false
+    enabled: true
     version: "0.1.0"
     secretsFiles:
       - ./phone-book/secrets.yaml

@@ -32,19 +32,11 @@ func (db *rdbms) Execute(query string, in []any) error {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(in...)
-	if err != nil {
+	if _, err := stmt.Exec(in...); err != nil {
 		if strings.Contains(err.Error(), "Duplicate entry") {
 			return errors.New(ErrDuplicate)
 		}
 		return fmt.Errorf("%s\n%v", "error when tying to excute statement", err)
-	}
-
-	if rowsAffected, err := result.RowsAffected(); err != nil {
-		return fmt.Errorf("error getting number of rows affected\n%v", err)
-	} else if rowsAffected == 0 {
-		// for delete
-		return errors.New(ErrNotFound)
 	}
 
 	return nil

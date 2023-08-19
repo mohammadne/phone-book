@@ -44,7 +44,7 @@ var migrations embed.FS
 func (r *repository) Migrate(direction models.Migrate) error {
 	files, err := fs.ReadDir(migrations, "migrations")
 	if err != nil {
-		return fmt.Errorf("error reading migrations directory:\n%v", err)
+		return fmt.Errorf("Error reading migrations directory:\n%v", err)
 	}
 
 	result := make([]string, 0, len(files)/2)
@@ -69,11 +69,11 @@ func (r *repository) Migrate(direction models.Migrate) error {
 
 		data, err := fs.ReadFile(migrations, file)
 		if err != nil {
-			return fmt.Errorf("error reading migration file: %s\n%v", file, err)
+			return fmt.Errorf("Error reading migration file: %s\n%v", file, err)
 		}
 
 		if err := r.rdbms.Execute(string(data), []any{}); err != nil {
-			return fmt.Errorf("error migrating the file: %s\n%v", file, err)
+			return fmt.Errorf("Error migrating the file: %s\n%v", file, err)
 		}
 	}
 

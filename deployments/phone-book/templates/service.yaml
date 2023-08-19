@@ -22,6 +22,9 @@ metadata:
   name: {{ include "phone-book.fullname" . }}-client
   labels:
     {{- include "phone-book.labels" . | nindent 4 }}
+  annotations:
+    cloud.networking.sotoon.ir/load-balancer: {{ include "phone-book.fullname" . }}-lb
+    cloud.networking.sotoon.ir/load-balancer-external-ip: {{ include "phone-book.fullname" . }}-lb-external-ip
 spec:
   type: {{ .Values.service.client.type }}
   ports:

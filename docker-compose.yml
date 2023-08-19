@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   db:
-    image: postgres:15.2-bullseye
+    image: postgres:15.3-bookworm
     restart: always
     environment:
       POSTGRES_PASSWORD: PHONEBOOK_PASSWORD
