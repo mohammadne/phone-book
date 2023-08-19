@@ -1,0 +1,43 @@
+settings:
+  maxHistory: 10
+  timeout: 6000
+
+namespaces:
+  gholam:
+    labels:
+      managed-by: helmsman
+
+helmRepos:
+  bitnami: https://charts.bitnami.com/bitnami
+
+apps:
+  redis:
+    name: redis
+    namespace: gholam
+    chart: "bitnami/redis"
+    enabled: true
+    version: "17.14.2"
+    secretsFiles:
+      - ./redis/secrets.yaml
+    valuesFiles:
+      - ./redis/values.yaml
+
+  postgresql:
+    name: postgresql
+    namespace: gholam
+    chart: "bitnami/postgresql"
+    enabled: true
+    version: "12.7.1"
+    secretsFiles:
+      - ./postgresql/secrets.yaml
+    valuesFiles:
+      - ./postgresql/values.yaml
+
+  gholam:
+    name: gholam
+    namespace: gholam
+    chart: "./gholam"
+    enabled: true
+    version: "0.1.0"
+    secretsFiles:
+      - ./gholam/secrets.yaml

@@ -1,0 +1,16 @@
+global:
+  storageClass: "remote-disk"
+
+auth:
+  database: gholam_db
+
+primary:
+  persistence:
+    enabled: true
+    size: 2Gi
+
+readReplicas:
+  replicaCount: 1
+  persistence:
+    enabled: true
+    size: 2Gi
